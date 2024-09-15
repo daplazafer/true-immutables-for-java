@@ -1,108 +1,111 @@
 package com.dpf.ti4j.validation
 
 import com.dpf.ti4j.Immutable
-import com.dpf.ti4j.Mutable
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners
+import org.reflections.util.ClasspathHelper
+import org.reflections.util.ConfigurationBuilder
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import java.lang.reflect.ParameterizedType
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
+
 
 object ImmutableValidator {
 
     private val validatedClasses = Collections.newSetFromMap(WeakHashMap<Class<*>, Boolean>())
 
-    fun validate(record: Class<*>) {
+    fun validate(clazz: Class<*>) {
 
-        if (validatedClasses.contains(record)) return
+        if (clazz.isAnnotationPresent(Immutable::class.java)) return
 
-        for (field in record.declaredFields) {
+        if (validatedClasses.contains(clazz)) return
 
-            if (field.isAnnotationPresent(Mutable::class.java)) continue
-            if (field.type.isAnnotationPresent(Mutable::class.java)) continue
-            if (field.type.isAnnotationPresent(Immutable::class.java)) continue
-            if (field.type.isPrimitive) continue
-            if (TypeInspector.isJavaImmutable(field.type)) continue
+        for (field in clazz.declaredFields) {
 
-            val fieldValue = field.get(null)
-            if (fieldValue != null && AtomicReference::class.java.isAssignableFrom(field.type)) {
-                validateAtomicReferenceElement(record.name, field.name, fieldValue as AtomicReference<*>)
-                continue
+            if (Modifier.isStatic(field.modifiers)) continue
+
+            val originalCanAccess = field.canAccess(null)
+            try {
+                field.trySetAccessible()
+
+                if (field.isAnnotationPresent(Immutable::class.java)) continue
+                if (field.type.isAnnotationPresent(Immutable::class.java)) continue
+
+                validateFinalModifier(clazz, field)
+
+                if (field.type.isPrimitive) continue
+                if (TypeInspector.isJavaImmutable(field.type)) continue
+
+                field.get(null)?.let { fieldValue ->
+                    when {
+                        TypeInspector.isAtomicReference(fieldValue) -> validateAtomicReference(clazz, field)
+                        TypeInspector.isImmutableCollection(fieldValue) -> validateCollection(clazz, field)
+                        TypeInspector.isImmutableMap(fieldValue) -> validateMap(clazz, field)
+                    }
+                }
+
+                validateSubclasses(field.type)
+                validate(field.type)
+
+            } finally {
+                field.isAccessible = originalCanAccess
             }
-            if (fieldValue != null && TypeInspector.isImmutableCollection(fieldValue)) {
-                validateCollectionElements(record.name, field.name, fieldValue as Collection<*>)
-                continue
-            }
-            if (fieldValue != null && TypeInspector.isImmutableMap(fieldValue)) {
-                validateMapElements(record.name, field.name, fieldValue as Map<*, *>)
-                continue
-            }
-
-            throw IllegalStateException("Field ${field.name} in record ${record.name} is mutable")
         }
 
-        validatedClasses.add(record)
+        validatedClasses.add(clazz)
     }
 
-    private fun validateAtomicReferenceElement(
-        recordName: String,
-        fieldName: String,
-        atomicReference: AtomicReference<*>
-    ) {
-        val innerValue = atomicReference.get()
-        try {
-            if (innerValue != null)
-                validate(innerValue::class.java)
-        } catch (e: IllegalStateException) {
-            throw IllegalStateException(
-                "Field $fieldName in record $recordName is a AtomicReference containing mutable element: ${innerValue::class.java.name}",
-                e
-            )
-        }
+    private fun validateFinalModifier(clazz: Class<*>, field: Field) {
+
+        if (!Modifier.isFinal(field.modifiers))
+            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is not final.")
     }
 
-    private fun validateCollectionElements(
-        recordName: String,
-        fieldName: String,
-        collection: Collection<*>
-    ) {
-        collection.forEach { item ->
-            if (item != null) {
-                try {
-                    validate(item::class.java)
-                } catch (e: IllegalStateException) {
-                    throw IllegalStateException(
-                        "Field $fieldName in record $recordName is a Collection containing mutable element: ${item::class.java.name}",
-                        e
-                    )
-                }
-            }
-        }
+    private fun validateAtomicReference(clazz: Class<*>, field: Field) {
+
+        if (field.type.genericSuperclass !is ParameterizedType)
+            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is an AtomicReference without generic types.")
+
+        val parameterizedType = field.type.genericSuperclass as ParameterizedType
+        val actualTypeArgument = parameterizedType.actualTypeArguments[0] as Class<*>
+
+        validate(actualTypeArgument)
     }
 
-    private fun validateMapElements(
-        recordName: String,
-        fieldName: String,
-        map: Map<*, *>
-    ) {
-        map.forEach { (key, value) ->
-            if (key != null) {
-                try {
-                    validate(key::class.java)
-                } catch (e: IllegalStateException) {
-                    throw IllegalStateException(
-                        "Field $fieldName in record $recordName is a Map containing mutable key: ${key::class.java.name}",
-                        e
-                    )
-                }
-            }
-            if (value != null) {
-                try {
-                    validate(value::class.java)
-                } catch (e: IllegalStateException) {
-                    throw IllegalStateException(
-                        "Field $fieldName in record $recordName is a Map containing mutable value: ${value::class.java.name}",
-                        e
-                    )
-                }
-            }
-        }
+    private fun validateCollection(clazz: Class<*>, field: Field) {
+
+        if (field.type.genericSuperclass !is ParameterizedType)
+            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is a raw Collection without generic types.")
+
+        val parameterizedType = field.type.genericSuperclass as ParameterizedType
+        val actualTypeArgument = parameterizedType.actualTypeArguments[0] as Class<*>
+
+        validate(actualTypeArgument)
+    }
+
+    private fun validateMap(clazz: Class<*>, field: Field) {
+
+        if (field.type.genericSuperclass !is ParameterizedType)
+            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is a raw Map without generic types.")
+
+        val parameterizedType = field.type.genericSuperclass as ParameterizedType
+        val keyTypeArgument = parameterizedType.actualTypeArguments[0] as Class<*>
+        val valueTypeArgument = parameterizedType.actualTypeArguments[1] as Class<*>
+
+        validate(keyTypeArgument)
+        validate(valueTypeArgument)
+    }
+
+    private fun validateSubclasses(clazz: Class<*>) {
+        val reflections = Reflections(
+            ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forJavaClassPath())
+                .setScanners(Scanners.SubTypes)
+        )
+        val subclasses = reflections.getSubTypesOf(clazz)
+
+        for (subclass in subclasses)
+            validate(subclass)
     }
 }

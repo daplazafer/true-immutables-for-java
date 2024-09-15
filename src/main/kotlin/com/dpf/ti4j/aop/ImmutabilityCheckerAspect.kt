@@ -15,14 +15,10 @@ class ImmutabilityCheckerAspect {
     fun validateImmutableClass() {
         val clazz = this::class.java
 
-        if (!clazz.isRecord) {
-            throw IllegalStateException("Class ${clazz.name} is not a record, but is annotated with @Immutable")
-        }
-
         try {
             ImmutableValidator.validate(clazz)
         } catch (e: Exception) {
-            throw IllegalStateException("Record ${clazz.name} is not immutable", e)
+            throw IllegalStateException("Class ${clazz.name} is not immutable", e)
         }
     }
 }

@@ -18,6 +18,7 @@ import java.util.OptionalDouble
 import java.util.OptionalInt
 import java.util.OptionalLong
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
 
 object TypeInspector {
 
@@ -55,6 +56,10 @@ object TypeInspector {
 
             else -> false
         }
+    }
+
+    fun isAtomicReference(obj: Any?): Boolean {
+        return obj is AtomicReference<*>
     }
 
     fun isImmutableCollection(obj: Any?): Boolean {
