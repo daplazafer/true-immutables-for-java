@@ -14,8 +14,6 @@ object ImmutableValidator {
 
     fun validate(clazz: Class<*>) {
 
-        if (clazz.isAnnotationPresent(Immutable::class.java)) return
-
         for (field in clazz.declaredFields) {
 
             if (Modifier.isStatic(field.modifiers)) continue
@@ -34,9 +32,20 @@ object ImmutableValidator {
 
                 field.get(null)?.let { fieldValue ->
                     when {
-                        TypeInspector.isAtomicReference(fieldValue) -> validateAtomicReference(clazz, field)
-                        TypeInspector.isImmutableCollection(fieldValue) -> validateCollection(clazz, field)
-                        TypeInspector.isImmutableMap(fieldValue) -> validateMap(clazz, field)
+                        TypeInspector.isAtomicReference(fieldValue) -> {
+                            validateAtomicReference(clazz, field)
+                            return@let
+                        }
+
+                        TypeInspector.isImmutableCollection(fieldValue) -> {
+                            validateCollection(clazz, field)
+                            return@let
+                        }
+
+                        TypeInspector.isImmutableMap(fieldValue) -> {
+                            validateMap(clazz, field)
+                            return@let
+                        }
                     }
                 }
 
