@@ -137,3 +137,14 @@ public record MyImmutableRecord(
 ```
 
 The `@Immutable` annotation enforces immutability rules on all fields except those marked with `@Mutable`, which are excluded from the checks.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+### Dependencies
+
+This project makes use of third-party dependencies that are governed by their respective licenses:
+
+- **Kotlin** is licensed under the **Apache License 2.0**. More details can be found at [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+- **AspectJ** is licensed under the **Eclipse Public License (EPL) 1.0**. More details can be found at [https://www.eclipse.org/legal/epl-v10.html](https://www.eclipse.org/legal/epl-v10.html).
