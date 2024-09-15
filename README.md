@@ -62,12 +62,9 @@ The validation process goes through all the fields of the **record** or **class*
 - The field is **final**
 - The field has **primitive type**
 - The field is of a **known immutable type** (e.g., primitives, `String`, `Instant`, `Optional`, etc.).
-- The field is a **collection** or **map** marked as immutable (using `Collections.unmodifiableList()`, `Map.of()`, etc.).
+- The field is a **collection** or **map** marked as immutable (using `Collections.unmodifiableList()`, `Map.of()`, etc. to instantiate).
 - The class will also be checked for any subclasses in the classpath, ensuring that all subclasses are immutable as well.
 - The field is another immutable **record** or **class**.
-
-### Caching Mechanism
-To avoid redundant validation, **TI4J** uses an internal **cache** of types that have already been validated. Once a **record** or **class** has been successfully checked for immutability, it is added to the cache. This significantly improves performance, as subsequent instances of the same **record** or **class** don't need to be revalidated.
 
 ### Custom Exclusions
 If you need to allow certain **field** to by-pass validation, you can annotate it with `@Immutable`, and it will be excluded from the immutability check.

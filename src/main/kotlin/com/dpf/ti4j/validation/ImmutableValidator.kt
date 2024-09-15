@@ -8,18 +8,13 @@ import org.reflections.util.ConfigurationBuilder
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
-import java.util.*
 
 
 object ImmutableValidator {
 
-    private val validatedClasses = Collections.newSetFromMap(WeakHashMap<Class<*>, Boolean>())
-
     fun validate(clazz: Class<*>) {
 
         if (clazz.isAnnotationPresent(Immutable::class.java)) return
-
-        if (validatedClasses.contains(clazz)) return
 
         for (field in clazz.declaredFields) {
 
@@ -52,8 +47,6 @@ object ImmutableValidator {
                 field.isAccessible = originalCanAccess
             }
         }
-
-        validatedClasses.add(clazz)
     }
 
     private fun validateFinalModifier(clazz: Class<*>, field: Field) {

@@ -22,17 +22,16 @@ import java.util.concurrent.atomic.AtomicReference
 
 object TypeInspector {
 
-    fun isJavaImmutable(obj: Class<*>): Boolean {
-        return when (obj) {
+    fun isJavaImmutable(clazz: Class<*>): Boolean {
+        return when (clazz) {
             Integer::class.java,
-            Long::class.java,
-            Double::class.java,
-            Boolean::class.java,
-            Char::class.java,
-            Byte::class.java,
-            Short::class.java,
-            Float::class.java,
+            java.lang.Long::class.java,
+            java.lang.Double::class.java,
+            java.lang.Boolean::class.java,
             Character::class.java,
+            java.lang.Byte::class.java,
+            java.lang.Short::class.java,
+            java.lang.Float::class.java,
             String::class.java,
             Instant::class.java,
             LocalDate::class.java,
@@ -63,17 +62,19 @@ object TypeInspector {
     }
 
     fun isImmutableCollection(obj: Any?): Boolean {
-        return when (obj) {
-            is List<*> -> obj::class.java.name == "java.util.Collections\$UnmodifiableList"
-            is Set<*> -> obj::class.java.name == "java.util.Collections\$UnmodifiableSet"
-            else -> false
+        return when (obj?.javaClass?.name) {
+            "java.util.Collections\$UnmodifiableList",
+            "java.util.Collections\$UnmodifiableRandomAccessList",
+            "java.util.Collections\$UnmodifiableSet" -> true
+
+            else -> obj?.javaClass?.name?.startsWith("java.util.ImmutableCollections") == true
         }
     }
 
     fun isImmutableMap(obj: Any?): Boolean {
-        return when (obj) {
-            is Map<*, *> -> obj::class.java.name == "java.util.Collections\$UnmodifiableMap"
-            else -> false
+        return when (obj?.javaClass?.name) {
+            "java.util.Collections\$UnmodifiableMap" -> true
+            else -> obj?.javaClass?.name?.startsWith("java.util.ImmutableCollections") == true
         }
     }
 }
