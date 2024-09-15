@@ -1,24 +1,22 @@
 package com.dpf.ti4j.validation
 
 import com.dpf.ti4j.Immutable
-import org.reflections.Reflections
-import org.reflections.scanners.Scanners
-import org.reflections.util.ClasspathHelper
-import org.reflections.util.ConfigurationBuilder
+import com.dpf.ti4j.exception.ImmutabilityValidationException
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
-import java.lang.reflect.ParameterizedType
+import java.util.concurrent.atomic.AtomicReference
 
 
-object ImmutableValidator {
+class ImmutableValidator(private val typeInspector: TypeInspector) {
 
-    fun validate(clazz: Class<*>) {
+    fun validate(instance: Any) {
+        val clazz = instance::class.java
 
         for (field in clazz.declaredFields) {
 
             if (Modifier.isStatic(field.modifiers)) continue
 
-            val originalCanAccess = field.canAccess(null)
+            val originalCanAccess = field.canAccess(instance)
             try {
                 field.trySetAccessible()
 
@@ -28,29 +26,40 @@ object ImmutableValidator {
                 validateFinalModifier(clazz, field)
 
                 if (field.type.isPrimitive) continue
-                if (TypeInspector.isJavaImmutable(field.type)) continue
 
-                field.get(null)?.let { fieldValue ->
+                val fieldValue = field.get(instance)
+                fieldValue?.let {
                     when {
-                        TypeInspector.isAtomicReference(fieldValue) -> {
-                            validateAtomicReference(clazz, field)
+                        typeInspector.isAtomicReference(fieldValue) -> {
+                            validateAtomicReference(fieldValue)
                             return@let
                         }
 
-                        TypeInspector.isImmutableCollection(fieldValue) -> {
-                            validateCollection(clazz, field)
+                        fieldValue is Collection<*> -> {
+                            if (!typeInspector.isImmutableCollection(fieldValue)) {
+                                throw ImmutabilityValidationException("Field ${field.name} in class ${clazz.name} is a mutable Collection.")
+                            }
+                            validateCollection(fieldValue)
                             return@let
                         }
 
-                        TypeInspector.isImmutableMap(fieldValue) -> {
-                            validateMap(clazz, field)
+                        fieldValue is Map<*, *> -> {
+                            if (!typeInspector.isImmutableMap(fieldValue)) {
+                                throw ImmutabilityValidationException("Field ${field.name} in class ${clazz.name} is a mutable Map.")
+                            }
+                            validateMap(fieldValue)
                             return@let
                         }
+
+                        else -> validate(fieldValue)
                     }
                 }
 
-                validateSubclasses(field.type)
-                validate(field.type)
+                if (typeInspector.isJavaImmutable(field.type)) {
+                    continue
+                } else {
+                    throw ImmutabilityValidationException("Field ${field.name} in class ${clazz.name} is mutable.")
+                }
 
             } finally {
                 field.isAccessible = originalCanAccess
@@ -59,55 +68,26 @@ object ImmutableValidator {
     }
 
     private fun validateFinalModifier(clazz: Class<*>, field: Field) {
-
-        if (!Modifier.isFinal(field.modifiers))
-            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is not final.")
+        if (!Modifier.isFinal(field.modifiers)) {
+            throw ImmutabilityValidationException("Field ${field.name} in class ${clazz.name} is not final.")
+        }
     }
 
-    private fun validateAtomicReference(clazz: Class<*>, field: Field) {
-
-        if (field.type.genericSuperclass !is ParameterizedType)
-            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is an AtomicReference without generic types.")
-
-        val parameterizedType = field.type.genericSuperclass as ParameterizedType
-        val actualTypeArgument = parameterizedType.actualTypeArguments[0] as Class<*>
-
-        validate(actualTypeArgument)
+    private fun validateAtomicReference(atomicReference: Any) {
+        val ref = atomicReference as AtomicReference<*>
+        ref.get()?.let { validate(it) }
     }
 
-    private fun validateCollection(clazz: Class<*>, field: Field) {
-
-        if (field.type.genericSuperclass !is ParameterizedType)
-            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is a raw Collection without generic types.")
-
-        val parameterizedType = field.type.genericSuperclass as ParameterizedType
-        val actualTypeArgument = parameterizedType.actualTypeArguments[0] as Class<*>
-
-        validate(actualTypeArgument)
+    private fun validateCollection(collection: Any) {
+        (collection as Collection<*>).forEach { item ->
+            item?.let { validate(it) }
+        }
     }
 
-    private fun validateMap(clazz: Class<*>, field: Field) {
-
-        if (field.type.genericSuperclass !is ParameterizedType)
-            throw IllegalStateException("Field ${field.name} in class ${clazz.name} is a raw Map without generic types.")
-
-        val parameterizedType = field.type.genericSuperclass as ParameterizedType
-        val keyTypeArgument = parameterizedType.actualTypeArguments[0] as Class<*>
-        val valueTypeArgument = parameterizedType.actualTypeArguments[1] as Class<*>
-
-        validate(keyTypeArgument)
-        validate(valueTypeArgument)
-    }
-
-    private fun validateSubclasses(clazz: Class<*>) {
-        val reflections = Reflections(
-            ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forJavaClassPath())
-                .setScanners(Scanners.SubTypes)
-        )
-        val subclasses = reflections.getSubTypesOf(clazz)
-
-        for (subclass in subclasses)
-            validate(subclass)
+    private fun validateMap(map: Any) {
+        (map as Map<*, *>).forEach { (key, value) ->
+            key?.let { validate(it) }
+            value?.let { validate(it) }
+        }
     }
 }

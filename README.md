@@ -63,7 +63,6 @@ The validation process goes through all the fields of the **record** or **class*
 - The field has **primitive type**
 - The field is of a **known immutable type** (e.g., primitives, `String`, `Instant`, `Optional`, etc.).
 - The field is a **collection** or **map** marked as immutable (using `Collections.unmodifiableList()`, `Map.of()`, etc. to instantiate).
-- The class will also be checked for any subclasses in the classpath, ensuring that all subclasses are immutable as well.
 - The field is another immutable **record** or **class**.
 
 ### Custom Exclusions
@@ -150,4 +149,3 @@ This project makes use of third-party dependencies that are governed by their re
 
 - **Kotlin** is licensed under the **Apache License 2.0**. More details can be found at [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0).
 - **AspectJ** is licensed under the **Eclipse Public License (EPL) 1.0**. More details can be found at [https://www.eclipse.org/legal/epl-v10.html](https://www.eclipse.org/legal/epl-v10.html).
-- **Reflections** is licensed under the **WTFPL (Do What the F*ck You Want to Public License)**. More details can be found at [https://tldrlegal.com/license/do-wtf-you-want-to-public-license-v2-(wtfpl)](https://tldrlegal.com/license/do-wtf-you-want-to-public-license-v2-(wtfpl)).

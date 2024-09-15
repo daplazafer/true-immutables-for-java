@@ -1,7 +1,11 @@
-package com.dpf.ti4j.validation;
+package com.dpf.ti4j.ut.validation;
 
+import com.dpf.ti4j.validation.TypeInspector;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -11,11 +15,14 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(MockitoExtension.class)
 class TypeInspectorTest {
 
-    private final TypeInspector typeInspector = TypeInspector.INSTANCE;
+    @InjectMocks
+    private TypeInspector typeInspector;
 
     @Nested
     class JavaImmutableTypesTest {

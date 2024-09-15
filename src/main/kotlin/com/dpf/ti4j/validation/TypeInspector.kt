@@ -20,7 +20,7 @@ import java.util.OptionalLong
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
-object TypeInspector {
+class TypeInspector {
 
     fun isJavaImmutable(clazz: Class<*>): Boolean {
         return when (clazz) {
