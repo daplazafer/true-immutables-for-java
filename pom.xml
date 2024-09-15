@@ -5,13 +5,13 @@
 
     <groupId>com.dpf</groupId>
     <artifactId>ti4j</artifactId>
-    <version>1.0.0</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>True Immutables for Java</name>
     <description>
         TI4Jis a lightweight library designed to enforce true immutability in Java records. 
-        It uses AspectJ for runtime validation, ensuring that records annotated with Immutable follow strict immutability rules, checking all fields. Users can exclude specific fields and classes using the Mutable annotation.
+        It uses AspectJ for runtime validation, ensuring that records annotated with Immutable follow strict immutability rules, checking all fields.
     </description>
 
     <properties>
