@@ -50,32 +50,11 @@ final class ImmutableTypeInspector {
             "java.util.ImmutableCollections$"
     };
 
-    private static final ImmutableTypeInspector INSTANCE = new ImmutableTypeInspector();
-
-    private ImmutableTypeInspector() {
-    }
-
-    static ImmutableTypeInspector getInstance() {
-        return INSTANCE;
-    }
-
-    boolean isPrimitive(Class<?> clazz) {
-        return clazz.isPrimitive();
-    }
-
-    boolean isArray(Class<?> clazz) {
-        return clazz.isArray();
-    }
-
-    boolean isJavaImmutable(Class<?> clazz) {
+    static boolean isJavaImmutable(Class<?> clazz) {
         return Arrays.asList(JAVA_IMMUTABLES).contains(clazz);
     }
 
-    boolean isAtomicReference(Object obj) {
-        return obj instanceof AtomicReference;
-    }
-
-    boolean isImmutableCollection(Object obj) {
+    static boolean isImmutableCollection(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -84,7 +63,7 @@ final class ImmutableTypeInspector {
                 .anyMatch(className::startsWith);
     }
 
-    boolean isImmutableMap(Object obj) {
+    static boolean isImmutableMap(Object obj) {
         if (obj == null) {
             return false;
         }

@@ -13,12 +13,14 @@ public class ImmutableValidationAspect {
     }
 
     @AfterReturning("constructorOfImmutableClass()")
-    public void validateImmutableClass(JoinPoint joinPoint) {
+    public void validateImmutableClass(final JoinPoint joinPoint) {
 
         Object instance = joinPoint.getTarget();
 
         try {
+
             ImmutableValidator.getInstance().validate(instance);
+
         } catch (ImmutableValidationException e) {
             throw new IllegalStateException("Instance of '" + instance.getClass().getName() + "' is not immutable.", e);
         }

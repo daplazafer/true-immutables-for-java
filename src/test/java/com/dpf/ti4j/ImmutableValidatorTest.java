@@ -83,8 +83,9 @@ class ImmutableValidatorTest {
         }
 
         @Test
-        void validAtomicReferenceField() {
-            new AtomicReferenceField(new AtomicReference<>("test"));
+        void atomicReferenceField() {
+            assertThrows(IllegalStateException.class, () ->
+                    new AtomicReferenceField(new AtomicReference<>("test")));
         }
 
         @Test

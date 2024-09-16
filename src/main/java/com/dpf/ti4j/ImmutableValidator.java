@@ -4,23 +4,24 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+
+import static com.dpf.ti4j.ImmutableTypeInspector.*;
+import static java.lang.reflect.Modifier.isFinal;
+import static java.util.Objects.nonNull;
 
 final class ImmutableValidator {
 
     private static final ImmutableValidator INSTANCE = new ImmutableValidator();
 
-    private final ImmutableTypeInspector immutableTypeInspector = ImmutableTypeInspector.getInstance();
-
     private ImmutableValidator() {
     }
 
-    static ImmutableValidator getInstance() {
+    public static ImmutableValidator getInstance() {
         return INSTANCE;
     }
 
     void validate(Object instance) throws ImmutableValidationException {
-        Class<?> clazz = instance.getClass();
+        final var clazz = instance.getClass();
 
         for (Field field : clazz.getDeclaredFields()) {
 
@@ -35,47 +36,46 @@ final class ImmutableValidator {
                 continue;
             }
 
-            if (immutableTypeInspector.isArray(field.getType())) {
+            if (!isFinal(field.getModifiers())) {
+                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is not final.");
+            }
+
+            if (field.getType().isArray()) {
                 throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is type array.");
             }
 
-            validateFinalModifier(clazz, field);
-
-            if (immutableTypeInspector.isPrimitive(field.getType())) {
+            if (field.getType().isPrimitive()) {
                 continue;
             }
-            if (immutableTypeInspector.isJavaImmutable(field.getType())) {
+            if (isJavaImmutable(field.getType())) {
                 continue;
             }
 
-            boolean originalAccessible = field.canAccess(instance);
+            final var originalAccessible = field.canAccess(instance);
             try {
                 field.setAccessible(true);
 
-                Object fieldValue = field.get(instance);
-                if (fieldValue != null) {
-                    if (immutableTypeInspector.isAtomicReference(fieldValue)) {
-                        validateAtomicReference((AtomicReference<?>) fieldValue);
-                        continue;
-                    } else if (fieldValue instanceof Collection) {
-                        if (!immutableTypeInspector.isImmutableCollection(fieldValue)) {
+                final var fieldValue = field.get(instance);
+                if (nonNull(fieldValue)) {
+
+                    if (fieldValue instanceof Collection) {
+                        if (!isImmutableCollection(fieldValue)) {
                             throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a mutable Collection.");
                         }
-                        validateCollection((Collection<?>) fieldValue);
+                        this.validateCollection((Collection<?>) fieldValue);
                         continue;
                     } else if (fieldValue instanceof Map) {
-                        if (!immutableTypeInspector.isImmutableMap(fieldValue)) {
+                        if (!isImmutableMap(fieldValue)) {
                             throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a mutable Map.");
                         }
-                        validateMap((Map<?, ?>) fieldValue);
+                        this.validateMap((Map<?, ?>) fieldValue);
                         continue;
                     } else {
-                        validate(fieldValue);
+                        this.validate(fieldValue);
                     }
 
-                    throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is not mutable");
+                    throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' has mutable value.");
                 }
-
             } catch (IllegalAccessException e) {
                 throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is not accessible, and therefore, its immutability cannot be guaranteed.", e);
             } finally {
@@ -84,59 +84,32 @@ final class ImmutableValidator {
         }
     }
 
-    private void validateFinalModifier(Class<?> clazz, Field field) throws ImmutableValidationException {
-        if (!Modifier.isFinal(field.getModifiers())) {
-            throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is not final.");
-        }
-    }
-
-    private void validateArray(Object[] array) throws ImmutableValidationException {
-        for (Object element : array) {
-            if (element != null) {
-                if (immutableTypeInspector.isJavaImmutable(element.getClass())) {
-                    return;
-                }
-                validate(element);
-            }
-        }
-    }
-
-    private void validateAtomicReference(AtomicReference<?> atomicReference) throws ImmutableValidationException {
-        Object value = atomicReference.get();
-        if (value != null) {
-            if (immutableTypeInspector.isJavaImmutable(value.getClass())) {
-                return;
-            }
-            validate(value);
-        }
-    }
-
     private void validateCollection(Collection<?> collection) throws ImmutableValidationException {
         for (Object element : collection) {
             if (element != null) {
-                if (immutableTypeInspector.isJavaImmutable(element.getClass())) {
+                if (isJavaImmutable(element.getClass())) {
                     return;
                 }
-                validate(element);
+                this.validate(element);
             }
         }
     }
 
     private void validateMap(Map<?, ?> map) throws ImmutableValidationException {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            Object key = entry.getKey();
-            Object value = entry.getValue();
+            final var key = entry.getKey();
+            final var value = entry.getValue();
             if (key != null) {
-                if (immutableTypeInspector.isJavaImmutable(key.getClass())) {
+                if (isJavaImmutable(key.getClass())) {
                     return;
                 }
-                validate(key);
+                this.validate(key);
             }
             if (value != null) {
-                if (immutableTypeInspector.isJavaImmutable(value.getClass())) {
+                if (isJavaImmutable(value.getClass())) {
                     return;
                 }
-                validate(value);
+                this.validate(value);
             }
         }
     }
