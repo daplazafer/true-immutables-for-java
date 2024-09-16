@@ -1,11 +1,7 @@
-package com.dpf.ti4j.ut.validation;
+package com.dpf.ti4j;
 
-import com.dpf.ti4j.validation.TypeInspector;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,153 +14,151 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
-class TypeInspectorTest {
+class ImmutableTypeInspectorTest {
 
-    @InjectMocks
-    private TypeInspector typeInspector;
+    private final ImmutableTypeInspector immutableTypeInspector = ImmutableTypeInspector.getInstance();
 
     @Nested
     class JavaImmutableTypesTest {
 
         @Test
         void testIntegerIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Integer.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Integer.class));
         }
 
         @Test
         void testLongIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Long.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Long.class));
         }
 
         @Test
         void testDoubleIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Double.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Double.class));
         }
 
         @Test
         void testBooleanIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Boolean.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Boolean.class));
         }
 
         @Test
         void testCharIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Character.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Character.class));
         }
 
         @Test
         void testByteIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Byte.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Byte.class));
         }
 
         @Test
         void testShortIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Short.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Short.class));
         }
 
         @Test
         void testFloatIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Float.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Float.class));
         }
 
         @Test
         void testCharacterIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Character.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Character.class));
         }
 
         @Test
         void testStringIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(String.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(String.class));
         }
 
         @Test
         void testInstantIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Instant.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Instant.class));
         }
 
         @Test
         void testLocalDateIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(LocalDate.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(LocalDate.class));
         }
 
         @Test
         void testLocalTimeIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(LocalTime.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(LocalTime.class));
         }
 
         @Test
         void testLocalDateTimeIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(LocalDateTime.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(LocalDateTime.class));
         }
 
         @Test
         void testZonedDateTimeIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(ZonedDateTime.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(ZonedDateTime.class));
         }
 
         @Test
         void testOffsetDateTimeIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(OffsetDateTime.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(OffsetDateTime.class));
         }
 
         @Test
         void testOffsetTimeIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(OffsetTime.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(OffsetTime.class));
         }
 
         @Test
         void testDurationIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Duration.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Duration.class));
         }
 
         @Test
         void testPeriodIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Period.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Period.class));
         }
 
         @Test
         void testOptionalIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Optional.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Optional.class));
         }
 
         @Test
         void testOptionalIntIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(OptionalInt.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(OptionalInt.class));
         }
 
         @Test
         void testOptionalLongIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(OptionalLong.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(OptionalLong.class));
         }
 
         @Test
         void testOptionalDoubleIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(OptionalDouble.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(OptionalDouble.class));
         }
 
         @Test
         void testUUIDIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(UUID.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(UUID.class));
         }
 
         @Test
         void testPathIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(Path.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(Path.class));
         }
 
         @Test
         void testFileSystemsIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(FileSystems.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(FileSystems.class));
         }
 
         @Test
         void testBigIntegerIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(BigInteger.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(BigInteger.class));
         }
 
         @Test
         void testBigDecimalIsJavaImmutable() {
-            assertTrue(typeInspector.isJavaImmutable(BigDecimal.class));
+            assertTrue(immutableTypeInspector.isJavaImmutable(BigDecimal.class));
         }
     }
 
@@ -174,12 +168,12 @@ class TypeInspectorTest {
         @Test
         void testIsAtomicReference() {
             final var reference = new AtomicReference<>("Test");
-            assertTrue(typeInspector.isAtomicReference(reference));
+            assertTrue(immutableTypeInspector.isAtomicReference(reference));
         }
 
         @Test
         void testIsNotAtomicReference() {
-            assertFalse(typeInspector.isAtomicReference("Not an AtomicReference"));
+            assertFalse(immutableTypeInspector.isAtomicReference("Not an AtomicReference"));
         }
     }
 
@@ -189,19 +183,19 @@ class TypeInspectorTest {
         @Test
         void testImmutableListFromListOf() {
             final var immutableList = List.of("item1", "item2");
-            assertTrue(typeInspector.isImmutableCollection(immutableList));
+            assertTrue(immutableTypeInspector.isImmutableCollection(immutableList));
         }
 
         @Test
         void testUnmodifiableListIsImmutable() {
             final var unmodifiableList = Collections.unmodifiableList(new ArrayList<>());
-            assertTrue(typeInspector.isImmutableCollection(unmodifiableList));
+            assertTrue(immutableTypeInspector.isImmutableCollection(unmodifiableList));
         }
 
         @Test
         void testMutableListIsNotImmutable() {
             final var mutableList = new ArrayList<>();
-            assertFalse(typeInspector.isImmutableCollection(mutableList));
+            assertFalse(immutableTypeInspector.isImmutableCollection(mutableList));
         }
     }
 
@@ -211,19 +205,19 @@ class TypeInspectorTest {
         @Test
         void testImmutableSetFromSetOf() {
             final var immutableSet = Set.of("item1", "item2");
-            assertTrue(typeInspector.isImmutableCollection(immutableSet));
+            assertTrue(immutableTypeInspector.isImmutableCollection(immutableSet));
         }
 
         @Test
         void testUnmodifiableSetIsImmutable() {
             final var unmodifiableSet = Collections.unmodifiableSet(new HashSet<>());
-            assertTrue(typeInspector.isImmutableCollection(unmodifiableSet));
+            assertTrue(immutableTypeInspector.isImmutableCollection(unmodifiableSet));
         }
 
         @Test
         void testMutableSetIsNotImmutable() {
             final var mutableSet = new HashSet<>();
-            assertFalse(typeInspector.isImmutableCollection(mutableSet));
+            assertFalse(immutableTypeInspector.isImmutableCollection(mutableSet));
         }
     }
 
@@ -233,19 +227,19 @@ class TypeInspectorTest {
         @Test
         void testImmutableMapFromMapOf() {
             final var immutableMap = Map.of("key", "value");
-            assertTrue(typeInspector.isImmutableMap(immutableMap));
+            assertTrue(immutableTypeInspector.isImmutableMap(immutableMap));
         }
 
         @Test
         void testUnmodifiableMapIsImmutable() {
             final var unmodifiableMap = Collections.unmodifiableMap(new HashMap<>());
-            assertTrue(typeInspector.isImmutableMap(unmodifiableMap));
+            assertTrue(immutableTypeInspector.isImmutableMap(unmodifiableMap));
         }
 
         @Test
         void testMutableMapIsNotImmutable() {
             final var mutableMap = new HashMap<>();
-            assertFalse(typeInspector.isImmutableMap(mutableMap));
+            assertFalse(immutableTypeInspector.isImmutableMap(mutableMap));
         }
     }
 }
