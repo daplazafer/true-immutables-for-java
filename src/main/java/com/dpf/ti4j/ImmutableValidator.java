@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 
-import static com.dpf.ti4j.ImmutableTypeInspector.*;
+import static com.dpf.ti4j.TypeInspector.*;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.util.Objects.nonNull;
 
@@ -44,15 +44,18 @@ final class ImmutableValidator {
                 throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is type array.");
             }
 
+            if (isKnownImmutable(field.getType())) {
+                continue;
+            }
+            if (isKnownMutable(field.getType())) {
+                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a known mutable type.");
+            }
 
             if (field.getType().isPrimitive()) {
                 continue;
             }
             if (isJavaImmutable(field.getType())) {
                 continue;
-            }
-            if (isJavaMutable(field.getType())) {
-                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a known mutable type.");
             }
 
             final var originalAccessible = field.canAccess(instance);

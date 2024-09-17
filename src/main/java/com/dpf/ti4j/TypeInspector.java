@@ -6,9 +6,16 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
-final class ImmutableTypeInspector {
+final class TypeInspector {
+
+    private static final Class<?>[] KNOWN_IMMUTABLES = {
+            // Add known immutable classes here
+    };
+
+    private static final Class<?>[] KNOWN_MUTABLES = {
+            // Add known mutable classes here
+    };
 
     private static final Class<?>[] JAVA_IMMUTABLES = {
             Integer.class,
@@ -40,9 +47,6 @@ final class ImmutableTypeInspector {
             BigDecimal.class,
     };
 
-    private static final Class<?>[] JAVA_MUTABLES = {
-    };
-
     private static final String[] IMMUTABLE_COLLECTIONS = {
             "java.util.Collections$Unmodifiable",
             "java.util.ImmutableCollections$"
@@ -53,12 +57,16 @@ final class ImmutableTypeInspector {
             "java.util.ImmutableCollections$"
     };
 
-    static boolean isJavaImmutable(Class<?> clazz) {
-        return Arrays.asList(JAVA_IMMUTABLES).contains(clazz);
+    static boolean isKnownMutable(Class<?> clazz) {
+        return Arrays.asList(KNOWN_MUTABLES).contains(clazz);
     }
 
-    static boolean isJavaMutable(Class<?> clazz) {
-        return Arrays.asList(JAVA_MUTABLES).contains(clazz);
+    static boolean isKnownImmutable(Class<?> clazz) {
+        return Arrays.asList(KNOWN_IMMUTABLES).contains(clazz);
+    }
+
+    static boolean isJavaImmutable(Class<?> clazz) {
+        return Arrays.asList(JAVA_IMMUTABLES).contains(clazz);
     }
 
     static boolean isImmutableCollection(Object obj) {

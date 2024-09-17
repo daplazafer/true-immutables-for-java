@@ -10,11 +10,11 @@ import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 
-import static com.dpf.ti4j.ImmutableTypeInspector.*;
+import static com.dpf.ti4j.TypeInspector.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ImmutableTypeInspectorTest {
+class TypeInspectorTest {
 
     @Nested
     class JavaImmutableTypesTest {
