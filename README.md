@@ -100,8 +100,6 @@ In **TI4J**, the following types are considered immutable by default and will pa
 - **Set**: Immutable sets created with `Collections.unmodifiableSet()` (and also `Set.of()`).
 - **Map**: Immutable maps created with `Collections.unmodifiableMap()` (and also `Map.of()`).
 
-**DISCLAIMER**: The use of `raw type` collections is not allowed due to the need for type safety and to ensure that all elements within collections are immutable. TI4J requires all collections, maps, and references to be explicitly typed with generics (e.g., `List<String>`, `Map<String, Integer>`) to enable proper validation of immutability. Raw types, such as `List` or `Map` without generic type parameters, will result in validation errors.
-
 ## Usage
 Annotate your record with `@Immutable` to enforce immutability checks. Use the `@Immutable` annotation to exclude specific fields from immutability validation.
 

@@ -2,7 +2,6 @@ package com.dpf.ti4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Map;
 
@@ -90,13 +89,10 @@ final class ImmutableValidator {
     }
 
     private static void validateCollection(Collection<?> collection) throws ImmutableValidationException {
-        if (!(collection.getClass().getGenericSuperclass() instanceof ParameterizedType)) {
-            throw new ImmutableValidationException("Collection '" + collection.getClass().getName() + "' uses raw types.");
-        }
         for (Object element : collection) {
             if (element != null) {
                 if (isJavaImmutable(element.getClass())) {
-                    return;
+                    continue;
                 }
                 validate(element);
             }
@@ -104,23 +100,18 @@ final class ImmutableValidator {
     }
 
     private static void validateMap(Map<?, ?> map) throws ImmutableValidationException {
-        if (!(map.getClass().getGenericSuperclass() instanceof ParameterizedType)) {
-            throw new ImmutableValidationException("Collection '" + map.getClass().getName() + "' uses raw types.");
-        }
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             final var key = entry.getKey();
             final var value = entry.getValue();
             if (key != null) {
-                if (isJavaImmutable(key.getClass())) {
-                    return;
+                if (!isJavaImmutable(key.getClass())) {
+                    validate(key);
                 }
-                validate(key);
             }
             if (value != null) {
-                if (isJavaImmutable(value.getClass())) {
-                    return;
+                if (!isJavaImmutable(value.getClass())) {
+                    validate(value);
                 }
-                validate(value);
             }
         }
     }
