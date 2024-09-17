@@ -25,7 +25,7 @@ Then, add the following dependency to your `pom.xml`:
     <dependency>
         <groupId>com.github.daplazafer</groupId>
         <artifactId>ti4j</artifactId>
-        <version>1.0.0</version>
+        <version>0.1.0-alpha</version>
     </dependency>
     ...
 </dependencies>
