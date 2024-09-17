@@ -129,7 +129,6 @@ class ImmutableValidatorTest {
         @Immutable
         static class NonFinalPrimitive {
             int value;
-
             NonFinalPrimitive(int value) {
                 this.value = value;
             }
@@ -146,13 +145,20 @@ class ImmutableValidatorTest {
     class MutableTest {
 
         @Immutable
-        record MutableField(StringBuilder stringBuilder) {
+        record MutableField(MutableClass mutableClass) {
+        }
+
+        static class MutableClass {
+            String value;
+            MutableClass(String value) {
+                this.value = value;
+            }
         }
 
         @Test
         void mutableField() {
             assertThrows(IllegalStateException.class, () ->
-                    new MutableField(new StringBuilder("test")));
+                    new MutableField(new MutableClass("test")));
         }
 
         @Test

@@ -44,11 +44,15 @@ final class ImmutableValidator {
                 throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is type array.");
             }
 
+
             if (field.getType().isPrimitive()) {
                 continue;
             }
             if (isJavaImmutable(field.getType())) {
                 continue;
+            }
+            if (isJavaMutable(field.getType())) {
+                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a known mutable type.");
             }
 
             final var originalAccessible = field.canAccess(instance);
@@ -64,17 +68,16 @@ final class ImmutableValidator {
                         }
                         this.validateCollection((Collection<?>) fieldValue);
                         continue;
-                    } else if (fieldValue instanceof Map) {
+                    }
+                    if (fieldValue instanceof Map) {
                         if (!isImmutableMap(fieldValue)) {
                             throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a mutable Map.");
                         }
                         this.validateMap((Map<?, ?>) fieldValue);
                         continue;
-                    } else {
-                        this.validate(fieldValue);
                     }
 
-                    throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' has mutable value.");
+                    this.validate(fieldValue);
                 }
             } catch (IllegalAccessException e) {
                 throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is not accessible, and therefore, its immutability cannot be guaranteed.", e);

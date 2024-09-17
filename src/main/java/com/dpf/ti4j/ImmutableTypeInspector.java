@@ -40,6 +40,9 @@ final class ImmutableTypeInspector {
             BigDecimal.class,
     };
 
+    private static final Class<?>[] JAVA_MUTABLES = {
+    };
+
     private static final String[] IMMUTABLE_COLLECTIONS = {
             "java.util.Collections$Unmodifiable",
             "java.util.ImmutableCollections$"
@@ -52,6 +55,10 @@ final class ImmutableTypeInspector {
 
     static boolean isJavaImmutable(Class<?> clazz) {
         return Arrays.asList(JAVA_IMMUTABLES).contains(clazz);
+    }
+
+    static boolean isJavaMutable(Class<?> clazz) {
+        return Arrays.asList(JAVA_MUTABLES).contains(clazz);
     }
 
     static boolean isImmutableCollection(Object obj) {
