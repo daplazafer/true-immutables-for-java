@@ -5,6 +5,8 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
+import static com.dpf.ti4j.ImmutableValidator.validate;
+
 @Aspect
 public class ImmutableValidationAspect {
 
@@ -15,14 +17,15 @@ public class ImmutableValidationAspect {
     @AfterReturning("constructorOfImmutableClass()")
     public void validateImmutableClass(final JoinPoint joinPoint) {
 
-        Object instance = joinPoint.getTarget();
+        final var instance = joinPoint.getTarget();
 
         try {
 
-            ImmutableValidator.getInstance().validate(instance);
+            validate(instance);
 
         } catch (ImmutableValidationException e) {
-            throw new IllegalStateException("Instance of '" + instance.getClass().getName() + "' is not immutable.", e);
+            throw new IllegalStateException("Instance of '" + instance.getClass().getName() +
+                    "' annotated as @Immutable is not immutable.", e);
         }
     }
 }

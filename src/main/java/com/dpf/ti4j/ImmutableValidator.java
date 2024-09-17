@@ -2,6 +2,7 @@ package com.dpf.ti4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Map;
 
@@ -11,16 +12,8 @@ import static java.util.Objects.nonNull;
 
 final class ImmutableValidator {
 
-    private static final ImmutableValidator INSTANCE = new ImmutableValidator();
+    static void validate(Object instance) throws ImmutableValidationException {
 
-    private ImmutableValidator() {
-    }
-
-    public static ImmutableValidator getInstance() {
-        return INSTANCE;
-    }
-
-    void validate(Object instance) throws ImmutableValidationException {
         final var clazz = instance.getClass();
 
         for (Field field : clazz.getDeclaredFields()) {
@@ -37,18 +30,21 @@ final class ImmutableValidator {
             }
 
             if (!isFinal(field.getModifiers())) {
-                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is not final.");
-            }
-
-            if (field.getType().isArray()) {
-                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is type array.");
+                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() +
+                        "' is not final.");
             }
 
             if (isKnownImmutable(field.getType())) {
                 continue;
             }
             if (isKnownMutable(field.getType())) {
-                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a known mutable type.");
+                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() +
+                        "' is a known mutable type.");
+            }
+
+            if (field.getType().isArray()) {
+                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() +
+                        "' is type array.");
             }
 
             if (field.getType().isPrimitive()) {
@@ -67,41 +63,50 @@ final class ImmutableValidator {
 
                     if (fieldValue instanceof Collection) {
                         if (!isImmutableCollection(fieldValue)) {
-                            throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a mutable Collection.");
+                            throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() +
+                                    "' is a mutable Collection.");
                         }
-                        this.validateCollection((Collection<?>) fieldValue);
+                        validateCollection((Collection<?>) fieldValue);
                         continue;
                     }
                     if (fieldValue instanceof Map) {
                         if (!isImmutableMap(fieldValue)) {
-                            throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is a mutable Map.");
+                            throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() +
+                                    "' is a mutable Map.");
                         }
-                        this.validateMap((Map<?, ?>) fieldValue);
+                        validateMap((Map<?, ?>) fieldValue);
                         continue;
                     }
 
-                    this.validate(fieldValue);
+                    validate(fieldValue);
                 }
             } catch (IllegalAccessException e) {
-                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() + "' is not accessible, and therefore, its immutability cannot be guaranteed.", e);
+                throw new ImmutableValidationException("Field '" + field.getName() + "' in class '" + clazz.getName() +
+                        "' is not accessible, and therefore, its immutability cannot be guaranteed.", e);
             } finally {
                 field.setAccessible(originalAccessible);
             }
         }
     }
 
-    private void validateCollection(Collection<?> collection) throws ImmutableValidationException {
+    private static void validateCollection(Collection<?> collection) throws ImmutableValidationException {
+        if (!(collection.getClass().getGenericSuperclass() instanceof ParameterizedType)) {
+            throw new ImmutableValidationException("Collection '" + collection.getClass().getName() + "' uses raw types.");
+        }
         for (Object element : collection) {
             if (element != null) {
                 if (isJavaImmutable(element.getClass())) {
                     return;
                 }
-                this.validate(element);
+                validate(element);
             }
         }
     }
 
-    private void validateMap(Map<?, ?> map) throws ImmutableValidationException {
+    private static void validateMap(Map<?, ?> map) throws ImmutableValidationException {
+        if (!(map.getClass().getGenericSuperclass() instanceof ParameterizedType)) {
+            throw new ImmutableValidationException("Collection '" + map.getClass().getName() + "' uses raw types.");
+        }
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             final var key = entry.getKey();
             final var value = entry.getValue();
@@ -109,13 +114,13 @@ final class ImmutableValidator {
                 if (isJavaImmutable(key.getClass())) {
                     return;
                 }
-                this.validate(key);
+                validate(key);
             }
             if (value != null) {
                 if (isJavaImmutable(value.getClass())) {
                     return;
                 }
-                this.validate(value);
+                validate(value);
             }
         }
     }
