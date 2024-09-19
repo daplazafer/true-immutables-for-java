@@ -11,11 +11,10 @@
     <modules>
         <module>ti4j-core</module>
         <module>ti4j-processor</module>
-        <module>ti4j-test</module>
     </modules>
 
     <properties>
-        <revision>1.0-SNAPSHOT</revision>
+        <revision>0.2.1-experimental</revision>
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
