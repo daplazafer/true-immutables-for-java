@@ -1,17 +1,17 @@
-package com.dpf.ti4j;
+package com.dpf.ti4j.core;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 
-import static com.dpf.ti4j.TypeInspector.*;
+import static com.dpf.ti4j.core.TypeInspector.*;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.util.Objects.nonNull;
 
-final class ImmutableValidator {
+public final class ImmutableValidator {
 
-    static void validate(Object instance) throws ImmutableValidationException {
+    public static void validate(Object instance) throws ImmutableValidationException {
 
         final var clazz = instance.getClass();
 

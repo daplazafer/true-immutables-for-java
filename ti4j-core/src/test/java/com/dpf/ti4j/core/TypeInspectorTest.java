@@ -1,4 +1,4 @@
-package com.dpf.ti4j;
+package com.dpf.ti4j.core;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 
-import static com.dpf.ti4j.TypeInspector.*;
+import static com.dpf.ti4j.core.TypeInspector.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
