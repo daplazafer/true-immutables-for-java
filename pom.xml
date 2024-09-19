@@ -5,7 +5,7 @@
 
     <groupId>com.dpf</groupId>
     <artifactId>ti4j</artifactId>
-    <version>0.2.2-experimental</version>
+    <version>0.2.3-experimental</version>
     <packaging>pom</packaging>
 
     <modules>
