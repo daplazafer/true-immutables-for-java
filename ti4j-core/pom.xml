@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.dpf</groupId>
         <artifactId>ti4j</artifactId>
-        <version>0.2.4-experimental</version>
+        <version>0.5.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

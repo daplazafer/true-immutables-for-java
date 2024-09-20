@@ -10,11 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ti4j-processor</artifactId>
-
-    <properties>
-        <byte-buddy.version>1.12.12</byte-buddy.version>
-    </properties>
+    <artifactId>ti4j-test</artifactId>
 
     <dependencies>
         <dependency>
@@ -22,16 +18,10 @@
             <artifactId>ti4j-core</artifactId>
             <version>0.5.0</version>
         </dependency>
-
         <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>${byte-buddy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-agent</artifactId>
-            <version>${byte-buddy.version}</version>
+            <groupId>com.dpf</groupId>
+            <artifactId>ti4j-processor</artifactId>
+            <version>0.5.0</version>
         </dependency>
     </dependencies>
 

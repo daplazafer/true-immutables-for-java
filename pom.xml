@@ -5,12 +5,13 @@
 
     <groupId>com.dpf</groupId>
     <artifactId>ti4j</artifactId>
-    <version>0.2.4-experimental</version>
+    <version>0.5.0</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>ti4j-core</module>
         <module>ti4j-processor</module>
+        <module>ti4j-test</module>
     </modules>
 
     <properties>
@@ -18,4 +19,21 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.dpf.ti4j.test.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
