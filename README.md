@@ -1,5 +1,5 @@
 # TI4J (True Immutables for Java)
-**TI4J** is a light-weight library designed to enforce true immutability in Java records and classes. It uses **AspectJ** for runtime validation, ensuring that records and classes annotated with `@Immutable` follow strict immutability rules, checking all fields.
+**TI4J** is a lightweight library designed to enforce true immutability in Java records and classes. It uses ByteBuddy as an agent to dynamically modify classes at runtime, ensuring that every time a class or record annotated with `@Immutable` is instantiated, its fields are validated for strict immutability.
 
 This library requires at least **Java 17**.
 
@@ -21,14 +21,58 @@ Then, add the following dependency to your `pom.xml`:
 
 ```xml
 <dependencies>
-    ...
+
     <dependency>
-        <groupId>com.github.daplazafer</groupId>
-        <artifactId>ti4j</artifactId>
-        <version>1.0.0</version>
+      <groupId>com.github.daplazafer</groupId>
+      <artifactId>true-immutables-for-java</artifactId>
+      <version>0.5.1</version>
     </dependency>
-    ...
+  
 </dependencies>
+```
+
+### Activate validation
+
+To enable the validation of classes annotated with `@Immutable`, make sure to call the following method at the start of your application:
+
+```
+ImmutableAnnotationProcessor.processImmutableAnnotations();
+```
+
+This method will scan your project's classpath for any classes annotated with `@Immutable` and apply runtime validation to ensure they conform to immutability rules.
+
+#### Example of usage:
+
+```java
+import com.dpf.ti4j.processor.ImmutableAnnotationProcessor;
+
+public class MainClass {
+
+    public static void main(String[] args) {
+        ImmutableAnnotationProcessor.processImmutableAnnotations();
+
+        // Your code goes here!
+        // ...
+    }
+}
+```
+
+Alternative with Spring:
+
+```java
+import com.dpf.ti4j.processor.ImmutableAnnotationProcessor;
+import org.springframework.context.annotation.Configuration;
+
+import jakarta.annotation.PostConstruct;
+
+@Configuration
+public class Ti4jConfiguration {
+
+  @PostConstruct
+  public void init() {
+    ImmutableAnnotationProcessor.processImmutableAnnotations();
+  }
+}
 ```
 
 ## How This Magic Works
@@ -119,9 +163,3 @@ The `@Immutable` annotation enforces immutability rules on all fields except tho
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
-### Dependencies
-
-This project makes use of third-party dependencies that are governed by their respective licenses:
-
-- **AspectJ** is licensed under the **Eclipse Public License (EPL) 1.0**. More details can be found at [https://www.eclipse.org/legal/epl-v10.html](https://www.eclipse.org/legal/epl-v10.html).

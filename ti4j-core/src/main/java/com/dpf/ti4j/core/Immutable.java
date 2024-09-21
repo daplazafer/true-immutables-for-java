@@ -1,4 +1,4 @@
-package com.dpf.ti4j;
+package com.dpf.ti4j.core;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,4 +1,4 @@
-package com.dpf.ti4j;
+package com.dpf.ti4j.core;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -6,6 +6,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
+
+import static java.util.Objects.isNull;
 
 final class TypeInspector {
 
@@ -70,18 +72,20 @@ final class TypeInspector {
     }
 
     static boolean isImmutableCollection(Object obj) {
-        if (obj == null) {
+
+        if (isNull(obj))
             return false;
-        }
+
         final var className = obj.getClass().getName();
         return Arrays.stream(IMMUTABLE_COLLECTIONS)
                 .anyMatch(className::startsWith);
     }
 
     static boolean isImmutableMap(Object obj) {
-        if (obj == null) {
+
+        if (isNull(obj))
             return false;
-        }
+
         final var className = obj.getClass().getName();
         return Arrays.stream(IMMUTABLE_MAPS)
                 .anyMatch(className::startsWith);
