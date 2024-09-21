@@ -33,6 +33,12 @@
             <artifactId>byte-buddy-agent</artifactId>
             <version>${byte-buddy.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
