@@ -5,8 +5,15 @@
 
     <groupId>com.dpf</groupId>
     <artifactId>ti4j</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
     <packaging>pom</packaging>
+
+    <name>True Immutables For Java</name>
+    <description>
+        TI4J is a lightweight library designed to enforce true immutability in Java records and classes.
+        It uses ByteBuddy as an agent to dynamically modify classes at runtime, ensuring that every time a class or
+        record annotated with @Immutable is instantiated, its fields are validated for strict immutability.
+    </description>
 
     <modules>
         <module>ti4j-core</module>
