@@ -25,7 +25,7 @@ Then, add the following dependency to your `pom.xml`:
     <dependency>
       <groupId>com.github.daplazafer</groupId>
       <artifactId>true-immutables-for-java</artifactId>
-      <version>0.5.0</version>
+      <version>0.5.1</version>
     </dependency>
   
 </dependencies>
