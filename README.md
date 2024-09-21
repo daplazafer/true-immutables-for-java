@@ -31,6 +31,24 @@ Then, add the following dependency to your `pom.xml`:
 </dependencies>
 ```
 
+## Usage
+
+Annotate your record with `@Immutable` to enforce immutability checks. Use the `@Immutable` annotation to exclude specific fields from immutability validation.
+
+### Example
+```java
+@Immutable
+public record MyImmutableRecord(
+    Long id, // Immutable field by default
+    MyOtherImmutableClass myCustomField, // MyOtherImmutableClass must be Immutable
+    Set<MyThirdImmutableRecord> mySetField, // MyThirdImmutableRecord must be Immutable too
+    @Immutable List<String> myListField // Excluded from validation
+) {}
+```
+
+The `@Immutable` annotation enforces immutability rules on all fields except those marked with `@Immutable`, which are excluded from the checks.
+
+
 ### Activate validation
 
 To enable the validation of classes annotated with `@Immutable`, make sure to call the following method at the start of your application:
@@ -76,10 +94,10 @@ public class Ti4jConfiguration {
 ```
 
 ## How This Magic Works
-When you annotate a **record** or **class** with `@Immutable`, **TI4J** automatically ensures that all fields adhere to strict immutability rules. This process happens every time a constructor is invoked, thanks to **Aspect-Oriented Programming (AOP)** using **AspectJ**.
+When you annotate a **record** or **class** with `@Immutable`, **TI4J** automatically ensures that all fields adhere to strict immutability rules. This process happens every time a constructor is invoked, thanks to the **ByteBuddy agent** that dynamically modifies the classes at runtime.
 
 ### Constructor Interception
-Each time a new instance of **record** or **class** annotated with `@Immutable` is created, an **aspect** intercepts the constructor and triggers the validation process for all the fields in the **record** or **class** recursively to ensure immutability.
+Each time a new instance of a **record** or **class** annotated with `@Immutable` is created, the **ByteBuddy agent** intercepts the constructor and triggers the validation process for all the fields in the **record** or **class** recursively to ensure immutability.
 
 ### What Does the Validation Check?
 The validation process goes through all the fields of the **record** or **class** and checks whether:
@@ -143,22 +161,6 @@ In **TI4J**, the following types are considered immutable by default and will pa
 - **List**: Immutable lists created with `Collections.unmodifiableList()` (and also `List.of()`).
 - **Set**: Immutable sets created with `Collections.unmodifiableSet()` (and also `Set.of()`).
 - **Map**: Immutable maps created with `Collections.unmodifiableMap()` (and also `Map.of()`).
-
-## Usage
-Annotate your record with `@Immutable` to enforce immutability checks. Use the `@Immutable` annotation to exclude specific fields from immutability validation.
-
-### Example
-```java
-@Immutable
-public record MyImmutableRecord(
-    Long id, // Immutable field by default
-    MyOtherImmutableClass myCustomField, // MyOtherImmutableClass must be Immutable
-    Set<MyThirdImmutableRecord> mySetField, // MyThirdImmutableRecord must be Immutable too
-    @Immutable List<String> myListField // Excluded from validation
-) {}
-```
-
-The `@Immutable` annotation enforces immutability rules on all fields except those marked with `@Immutable`, which are excluded from the checks.
 
 ## License
 
