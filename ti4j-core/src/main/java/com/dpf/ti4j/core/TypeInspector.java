@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 
+import static java.util.Objects.isNull;
+
 final class TypeInspector {
 
     private static final Class<?>[] KNOWN_IMMUTABLES = {
@@ -70,18 +72,20 @@ final class TypeInspector {
     }
 
     static boolean isImmutableCollection(Object obj) {
-        if (obj == null) {
+
+        if (isNull(obj))
             return false;
-        }
+
         final var className = obj.getClass().getName();
         return Arrays.stream(IMMUTABLE_COLLECTIONS)
                 .anyMatch(className::startsWith);
     }
 
     static boolean isImmutableMap(Object obj) {
-        if (obj == null) {
+
+        if (isNull(obj))
             return false;
-        }
+
         final var className = obj.getClass().getName();
         return Arrays.stream(IMMUTABLE_MAPS)
                 .anyMatch(className::startsWith);

@@ -21,14 +21,60 @@ Then, add the following dependency to your `pom.xml`:
 
 ```xml
 <dependencies>
-    ...
+
     <dependency>
-        <groupId>com.github.daplazafer</groupId>
-        <artifactId>ti4j</artifactId>
-        <version>0.1.0-alpha</version>
+      <groupId>com.github.daplazafer</groupId>
+      <artifactId>true-immutables-for-java</artifactId>
+      <version>0.5.0</version>
     </dependency>
-    ...
+  
 </dependencies>
+```
+
+### Activate validation
+
+To enable the validation of classes annotated with `@Immutable`, make sure to call the following method at the start of your application:
+
+```
+ImmutableAnnotationProcessor.processImmutableAnnotations();
+```
+
+This method will scan your project's classpath for any classes annotated with `@Immutable` and apply runtime validation to ensure they conform to immutability rules.
+
+#### Example of usage:
+
+```java
+import com.dpf.ti4j.processor.ImmutableAnnotationProcessor;
+
+public class MainClass {
+
+    public static void main(String[] args) {
+        ImmutableAnnotationProcessor.processImmutableAnnotations();
+
+        // Your code goes here!
+        // ...
+    }
+}
+```
+
+Alternative with Spring:
+
+```java
+import javax.annotation.PostConstruct;
+
+import com.dpf.ti4j.processor.ImmutableAnnotationProcessor;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class Ti4jActivationComponent {
+
+    @PostConstruct
+    public void activate() {
+        ImmutableAnnotationProcessor.processImmutableAnnotations();
+    }
+
+}
 ```
 
 ## How This Magic Works
