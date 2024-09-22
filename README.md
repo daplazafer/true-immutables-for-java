@@ -39,7 +39,7 @@ Then, add the following dependency to your `pom.xml`:
 
 ## Usage
 
-Annotate your record with `@Immutable` to enforce immutability checks. Use the `@Immutable` annotation to exclude
+Annotate your record or class with `@Immutable` to enforce immutability checks. Use the `@Immutable` annotation to exclude
 specific fields from immutability validation.
 
 ### Example
